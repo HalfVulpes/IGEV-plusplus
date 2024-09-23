@@ -301,16 +301,6 @@ This command:
 
 
 
-#### Notes
-
-- **Dependencies**: Ensure all required Python packages are installed.
-- **Extrinsic Matrix Format**: The YAML file must use the OpenCV matrix format for the extrinsic matrices.
-- **Camera IDs**: When using a YAML file, ensure the `camera_id` you specify exists in the file.
-- **Error Handling**: The script will raise errors if files are missing or formats are incorrect.
-- **Extensibility**: You can extend the script to read intrinsic parameters from the YAML file by modifying the code (see comments in the script).
-
-
-
 ## Complete Example
 
 Suppose you have the following setup:
