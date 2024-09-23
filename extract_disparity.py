@@ -49,30 +49,50 @@ def demo(args):
     output_directory.mkdir(exist_ok=True)
 
     with torch.no_grad():
-        left_images = sorted(glob.glob(args.left_imgs, recursive=True))
-        right_images = sorted(glob.glob(args.right_imgs, recursive=True))
-        print(f"Found {len(left_images)} images. Saving files to {output_directory}/")
+        left_files = glob.glob(os.path.join(args.left_imgs, '*'))
+        right_files = glob.glob(os.path.join(args.right_imgs, '*'))
+        left_filenames = {os.path.basename(f): f for f in left_files}
+        right_filenames = {os.path.basename(f): f for f in right_files}
+        common_filenames = set(left_filenames.keys()) & set(right_filenames.keys())
+        left_only = set(left_filenames.keys()) - set(right_filenames.keys())
+        right_only = set(right_filenames.keys()) - set(left_filenames.keys())
 
-        for (imfile1, imfile2) in tqdm(list(zip(left_images, right_images))):
+        if left_only:
+            print(f"Warning: The following files are only in the left directory and will be skipped:")
+            for filename in left_only:
+                print(f"  {filename}")
+        if right_only:
+            print(f"Warning: The following files are only in the right directory and will be skipped:")
+            for filename in right_only:
+                print(f"  {filename}")
+
+        # Prepare sorted lists of image pairs
+        sorted_common_filenames = sorted(common_filenames)
+        left_images = [left_filenames[f] for f in sorted_common_filenames]
+        right_images = [right_filenames[f] for f in sorted_common_filenames]
+
+        print(f"Found {len(left_images)} image pairs. Saving files to {output_directory}/")
+
+        for imfile1, imfile2 in tqdm(zip(left_images, right_images), total=len(left_images)):
             image1 = load_image(imfile1)
             image2 = load_image(imfile2)
             padder = InputPadder(image1.shape, divis_by=32)
             image1, image2 = padder.pad(image1, image2)
             disp = model(image1, image2, iters=args.valid_iters, test_mode=True)
             disp = padder.unpad(disp)
-            file_stem = imfile1.split('/')[-2]
-            
+            filename = os.path.splitext(os.path.basename(imfile1))[0]
+
             # Save disparity map as PNG
-            png_filename = os.path.join(output_directory, f'{file_stem}.png')
+            png_filename = os.path.join(output_directory, f'{filename}.png')
             disp_numpy = disp.cpu().numpy().squeeze()
             plt.imsave(png_filename, disp_numpy, cmap='jet')
-            
+
             # Save disparity map as numpy file
             if args.save_numpy:
-                np.save(output_directory / f"{file_stem}.npy", disp_numpy)
-            
+                np.save(output_directory / f"{filename}.npy", disp_numpy)
+
             # Save disparity map as .dspm (ASCII format)
-            dspm_filename = os.path.join(output_directory, f'{file_stem}.dspm')
+            dspm_filename = os.path.join(output_directory, f'{filename}.dspm')
             save_disparity_as_dspm(dspm_filename, disp_numpy)
 
             # Optional: Save disparity map as a colorized PNG using OpenCV (commented out)
