@@ -109,6 +109,7 @@ def main():
     parser.add_argument('--denoise', action='store_true', help='Apply denoising to the point clouds')  # Add denoise option
     parser.add_argument('--nb_neighbors', type=int, default=20, help='Number of neighbors to consider for denoising (default: 20)')  # Denoise parameter
     parser.add_argument('--std_ratio', type=float, default=2.0, help='Standard deviation ratio for denoising (default: 2.0)')  # Denoise parameter
+    parser.add_argument('--ds_voxel_size', type=float, default=0.05, help='Downsampled resolution')
     args = parser.parse_args()
 
     input_folder = args.input_folder
@@ -155,9 +156,13 @@ def main():
         else:
             identifier = f"{idx:06d}" 
 
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(point_cloud_transformed)
+        downsampled_pcd = pcd.voxel_down_sample(voxel_size=args.ds_voxel_size)
+
         output_filename = f"point_cloud_{identifier}.ply"
         output_file_path = os.path.join(output_folder, output_filename)
-        save_point_cloud_ascii(point_cloud_transformed, output_file_path)
+        save_point_cloud_ascii(downsampled_pcd.points, output_file_path)
 
 if __name__ == "__main__":
     main()
