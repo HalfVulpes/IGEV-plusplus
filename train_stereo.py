@@ -224,7 +224,7 @@ if __name__ == '__main__':
     parser.add_argument('--mixed_precision', default=True, action='store_true', help='use mixed precision')
 
     # Training parameters
-    parser.add_argument('--batch_size', type=int, default=8, help="batch size used during training.")
+    parser.add_argument('--batch_size', type=int, default=4, help="batch size used during training.")
     parser.add_argument('--train_datasets', default='sceneflow', choices=['sceneflow', 'kitti', 'middlebury_train', 'middlebury_finetune', 'eth3d_train', 'eth3d_finetune'], help="training datasets.")
     parser.add_argument('--lr', type=float, default=0.0002, help="max learning rate.")
     parser.add_argument('--num_steps', type=int, default=100000, help="length of training schedule.")
@@ -256,9 +256,6 @@ if __name__ == '__main__':
     parser.add_argument('--spatial_scale', type=float, nargs='+', default=[-0.4, 0.8], help='re-scale the images randomly')
     parser.add_argument('--noyjitter', action='store_true', help='don\'t simulate imperfect rectification')
     args = parser.parse_args()
-
-    torch.manual_seed(666)
-    np.random.seed(666)
     
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
