@@ -185,7 +185,6 @@ class SceneFlowDatasets(StereoDataset):
             self.disparity_list += [ disp ]
         logging.info(f"Added {len(self.disparity_list) - original_length} from Driving {self.dstype}")
 
-
 class ETH3D(StereoDataset):
     def __init__(self, aug_params=None, root='/data/StereoDatasets/eth3d', split='training'):
         super(ETH3D, self).__init__(aug_params, sparse=True)
