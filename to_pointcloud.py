@@ -106,10 +106,11 @@ def main():
     parser.add_argument('--baseline', type=float, default=0.05000244116935238, help='Baseline between the stereo cameras (default: 0.05000244116935238)')
     parser.add_argument('--extrinsic_yaml_file', type=str, help='YAML file containing the extrinsic matrices')
     parser.add_argument('--camera_id', type=str, default='body_T_cam0', help='Camera ID to use from YAML file (default: body_T_cam0)')
-    parser.add_argument('--denoise', action='store_true', help='Apply denoising to the point clouds')  # Add denoise option
-    parser.add_argument('--nb_neighbors', type=int, default=20, help='Number of neighbors to consider for denoising (default: 20)')  # Denoise parameter
-    parser.add_argument('--std_ratio', type=float, default=2.0, help='Standard deviation ratio for denoising (default: 2.0)')  # Denoise parameter
+    parser.add_argument('--denoise', default=True, action='store_true', help='Apply denoising to the point clouds')
+    parser.add_argument('--nb_neighbors', type=int, default=20, help='Number of neighbors to consider for denoising (default: 20)')
+    parser.add_argument('--std_ratio', type=float, default=2.0, help='Standard deviation ratio for denoising (default: 2.0)')
     parser.add_argument('--ds_voxel_size', type=float, default=0.05, help='Downsampled resolution')
+    parser.add_argument('--cutoff', type=float, default=10.0, help='Cut-off distance in meters to filter points beyond this distance (default: 10.0)')
     args = parser.parse_args()
 
     input_folder = args.input_folder
@@ -150,11 +151,15 @@ def main():
                 std_ratio=args.std_ratio
             )
 
+        distances = np.linalg.norm(point_cloud_transformed, axis=1)
+        valid_indices = distances <= args.cutoff
+        point_cloud_transformed = point_cloud_transformed[valid_indices]
+
         match = re.search(r'\d+', filename)
         if match:
             identifier = match.group()
         else:
-            identifier = f"{idx:06d}" 
+            identifier = f"{idx:06d}"
 
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(point_cloud_transformed)
@@ -162,7 +167,7 @@ def main():
 
         output_filename = f"point_cloud_{identifier}.ply"
         output_file_path = os.path.join(output_folder, output_filename)
-        save_point_cloud_ascii(downsampled_pcd.points, output_file_path)
+        save_point_cloud_ascii(np.asarray(downsampled_pcd.points), output_file_path)
 
 if __name__ == "__main__":
     main()
