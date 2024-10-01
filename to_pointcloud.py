@@ -111,6 +111,8 @@ def main():
     parser.add_argument('--std_ratio', type=float, default=2.0, help='Standard deviation ratio for denoising (default: 2.0)')
     parser.add_argument('--ds_voxel_size', type=float, default=0.05, help='Downsampled resolution')
     parser.add_argument('--cutoff', type=float, default=10.0, help='Cut-off distance in meters to filter points beyond this distance (default: 10.0)')
+    parser.add_argument('--start_id', type=int, default=0, help='The beginning index id of the point cloud files')
+    parser.add_argument('--end_id', type=int, default=100, help='The ending index id of the point cloud files')
     args = parser.parse_args()
 
     input_folder = args.input_folder
@@ -137,6 +139,7 @@ def main():
 
     files = [f for f in os.listdir(input_folder) if f.endswith('.dspm')]
     files.sort()
+    files = files[args.start_id:args.end_id]
 
     for idx, filename in enumerate(files):
         disparity_map_file = os.path.join(input_folder, filename)
