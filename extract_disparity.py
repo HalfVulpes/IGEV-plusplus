@@ -102,7 +102,7 @@ def demo(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--restore_ckpt', help="restore checkpoint", default='checkpoints/sceneflow.pth')
+    parser.add_argument('--restore_ckpt', help="restore checkpoint", default='checkpoints/trained.pth')
     parser.add_argument('--save_numpy', action='store_true', help='save output as numpy arrays')
     parser.add_argument('-l', '--left_imgs', help="path to all first (left) frames", default="left/")
     parser.add_argument('-r', '--right_imgs', help="path to all second (right) frames", default="right/")
