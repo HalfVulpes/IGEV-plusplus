@@ -1,0 +1,49 @@
+# Camera intrinsics
+fx: 425.99684953503163
+fy: 426.0108446650122
+cx: 426.5960073761994
+cy: 240.4590369784203
+baseline: 0.05000244116935238
+
+# Extrinsic matrix
+extrinsic_matrix:
+  - [0.00137718, -0.02366516,  0.99971899,  0.13932612]
+  - [-0.99998467,  0.00532906,  0.00150369,  0.015785]
+  - [-0.00536315, -0.99970574, -0.02365746,  0.00489279]
+  - [0, 0, 0, 1]
+
+# Model parameters
+restore_ckpt: 'checkpoints/trained.pth'
+mixed_precision: True
+valid_iters: 16
+
+# Architecture choices
+hidden_dims: [128, 128, 128]
+corr_levels: 2
+corr_radius: 4
+n_downsample: 2
+n_gru_layers: 3
+max_disp: 768
+s_disp_range: 48
+m_disp_range: 96
+l_disp_range: 192
+s_disp_interval: 1
+m_disp_interval: 2
+l_disp_interval: 4
+
+# Denoising parameters
+denoise: True
+nb_neighbors: 20
+std_ratio: 2.0
+
+# Point cloud parameters
+cutoff: 10.0  # Cut-off distance in meters
+ds_voxel_size: 0.05  # Downsample voxel size
+
+# Topic names
+left_image_topic: '/camera/infra1/image_rect_raw'
+right_image_topic: '/camera/infra2/image_rect_raw'
+pointcloud_topic: '/igev/pointcloud'
+
+# Keyframe extraction rate
+keyframe_rate: 1.0  # in Hz
