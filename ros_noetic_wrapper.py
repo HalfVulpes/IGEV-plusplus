@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 import sys
-sys.path.append('core')
+import os
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+core_directory = os.path.join(current_directory, 'core')
+sys.path.append(core_directory)
+
 
 import rospy
 import message_filters
