@@ -17,9 +17,9 @@ import cv2
 import torch.nn as nn
 
 class IGEVStereoNode:
-    def __init__(self):
-        # Read parameters
-        with open('params.yaml', 'r') as file:
+    def __init__(self, params_file):
+        # Read parameters from the provided YAML file
+        with open(params_file, 'r') as file:
             params = yaml.safe_load(file)
 
         self.fx = params['fx']
@@ -226,8 +226,12 @@ class IGEVStereoNode:
         return pc_msg
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="IGEV Stereo Node")
+    parser.add_argument('--param', required=True, help='Path to the parameter YAML file.')
+    args = parser.parse_args()
+
     try:
-        node = IGEVStereoNode()
+        node = IGEVStereoNode(args.param)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
